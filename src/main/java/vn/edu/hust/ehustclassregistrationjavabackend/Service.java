@@ -1,17 +1,20 @@
 package vn.edu.hust.ehustclassregistrationjavabackend;
 
-import lombok.RequiredArgsConstructor;
+import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Component;
-import vn.edu.hust.ehustclassregistrationjavabackend.model.entity.Course;
-import vn.edu.hust.ehustclassregistrationjavabackend.repository.CourseRepository;
+import vn.edu.hust.ehustclassregistrationjavabackend.utils.ObjectUtil;
 
-@Component
-@RequiredArgsConstructor
+import java.lang.reflect.Method;
+import java.util.Random;
 
 public class Service {
-    final CourseRepository courseRepository;
-    public void test() {
-        Course course = courseRepository.findById(1L).orElseThrow();
-        System.out.println(course.getPreCourse());
+    public static void main(String[] args) {
+        System.out.println("Anh yêu em rất nhiều");
     }
 }

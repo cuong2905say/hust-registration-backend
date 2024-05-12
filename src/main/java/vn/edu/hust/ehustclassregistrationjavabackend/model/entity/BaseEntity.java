@@ -1,43 +1,66 @@
 package vn.edu.hust.ehustclassregistrationjavabackend.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.Expose;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @MappedSuperclass
-@Getter
-public abstract class BaseEntity {
+
+@Data
+public abstract class BaseEntity implements Serializable {
     @Column(name = "createdBy")
-    @JsonIgnore
+    @Expose
+    @Nullable
     String createdById;
 
     @JoinColumn(name = "createdBy", updatable = false, insertable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @Expose(deserialize = false,serialize = false)
+    @Nullable
     User createdBy;
 
     @Column(name = "updatedBy")
-    @JsonIgnore
+    @Expose
+    @Nullable
     String updatedById;
 
     @JoinColumn(name = "updatedBy", updatable = false, insertable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @Expose(deserialize = false,serialize = false)
+    @Nullable
     User updatedBy;
 
     @CreationTimestamp
+    @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "createdTime", updatable = false)
-    @JsonIgnore
+    @Expose
+    @Nullable
     Timestamp createdTime;
 
     @UpdateTimestamp
+    @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "updatedTime")
-    @JsonIgnore
+    @Expose
+    @Nullable
     Timestamp updatedTime;
+
+    @PrePersist
+    protected void onCreate() {
+        createdTime = new Timestamp(System.currentTimeMillis());
+        updatedTime = createdTime;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedTime = new Timestamp(System.currentTimeMillis());
+    }
 
     public void update(String userId) {
         Timestamp now = new Timestamp(System.currentTimeMillis());

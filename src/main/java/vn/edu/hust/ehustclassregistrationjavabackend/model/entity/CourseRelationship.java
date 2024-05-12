@@ -1,38 +1,46 @@
 package vn.edu.hust.ehustclassregistrationjavabackend.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.Expose;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Getter
-@Table(name = "course_relationship")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "course_relationship", uniqueConstraints = {@UniqueConstraint(columnNames = {"course_id", "course_constraint_id"})})
 public class CourseRelationship extends BaseEntity {
     @Id
+    @Expose(serialize = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "course_id")
-    Long courseId;
+    @Expose
+    @Column(name = "course_id",nullable = false)
+    String courseId;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", insertable = false, updatable = false)
+    @Expose(serialize = false)
     Course course;
 
-    @Column(name = "course_constraint_id")
-    Long courseConstraintId;
+    @Column(name = "course_constraint_id",nullable = false)
+    @Expose
+    String courseConstraintId;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_constraint_id", insertable = false, updatable = false)
+    @Expose(serialize = false)
     Course courseConstraint;
 
     @Enumerated(value = EnumType.STRING)
+    @Expose
+    @Column(nullable = false)
     Relation relation;
+
     public enum Relation {
         PREREQUISITE,
         PRECOURSE,

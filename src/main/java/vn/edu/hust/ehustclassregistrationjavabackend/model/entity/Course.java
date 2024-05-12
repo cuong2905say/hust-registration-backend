@@ -1,59 +1,72 @@
 package vn.edu.hust.ehustclassregistrationjavabackend.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import org.hibernate.annotations.Where;
+import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
+import vn.edu.hust.ehustclassregistrationjavabackend.utils.GsonUtil;
 
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
 @Table(name = "course")
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class Course extends BaseEntity {
     @Id
-    Long id;
-    String courseCode;
+    @SerializedName("id")
+    @Expose
+    String id;
+    @Expose
     String courseName;
+    @Expose
     String courseNameE;
+    @Expose
+    @Column(columnDefinition = "text")
     String description;
-    Integer credit;
-    String creditInfo;
-    String gdCreditInfo;
-    Integer courseType;
-    Integer theoryHour;
-    Integer assignmentHour;
-    Integer practiceHour;
-    Integer selfStudyHour;
-    Integer internHour;
+    @Expose
+    @Column(columnDefinition = "int not null")
+    Integer credit; // 3
+    @Expose
+    String creditInfo; // (3-0-3-6)
+    @Expose
+    @Enumerated(EnumType.STRING)
+    CourseType courseType;
+    @Expose
+    String schoolName;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Where(clause = "relation = 'PREREQUISITE'")
-    @JsonIgnore
+    @Expose
+    @Column(columnDefinition = "bit not null default 0")
+    @Builder.Default
+    Boolean needExperiment = false;
+
+    @OneToMany(mappedBy = "courseId", fetch = FetchType.EAGER)
+    @SQLRestriction("relation = 'PREREQUISITE'")
+    @Expose
     List<CourseRelationship> preRequisiteCourses;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Where(clause = "relation = 'PRECOURSE'")
-    @JsonIgnore
+    @OneToMany(mappedBy = "courseId", fetch = FetchType.EAGER)
+    @SQLRestriction("relation = 'PRECOURSE'")
+    @Expose
     List<CourseRelationship> preCourse;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Where(clause = "relation = 'COREQUISITECOURSE'")
-    @JsonIgnore
+    @OneToMany(mappedBy = "courseId", fetch = FetchType.EAGER)
+    @SQLRestriction("relation = 'COREQUISITECOURSE'")
+    @Expose
     List<CourseRelationship> coreQuisiteCourse;
 
+    @Override
+    public String toString() {
+        return GsonUtil.gsonExpose.toJson(this);
+    }
 
-    public Course[] getPreRequisiteCourses() {
-        Course[] courses = new Course[preRequisiteCourses.size()];
-        for (int i = 0; i < courses.length; i++) {
-            courses[i] = preRequisiteCourses.get(i).getCourseConstraint();
-        }
-        return courses;
+    public enum CourseType {
+        STANDARD,
+        ELITECH
     }
 }
